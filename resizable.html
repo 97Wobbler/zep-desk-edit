@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Orthogonal Grid Area</title>
+        <style>
+            body {
+                background-color: black;
+            }
+            .rect {
+                position: absolute;
+                width: 200px;
+                height: 150px;
+
+                display: grid;
+                grid-template-columns: 10px 1fr 10px;
+                grid-template-rows: 10px 1fr 10px;
+
+                background-color: #6758ff;
+                border-radius: 5px;
+            }
+            .dragging {
+                background-color: #5b4df0;
+            }
+            .dragNW {cursor: nw-resize;}
+            .dragN {cursor: n-resize;}
+            .dragNE {cursor: ne-resize;}
+            .dragW {cursor: w-resize;}
+            .dragE {cursor: e-resize;}
+            .dragSW {cursor: sw-resize;}
+            .dragS {cursor: s-resize;}
+            .dragSE {cursor: se-resize;}
+            .move {cursor: move;}
+
+        </style>
+    <script>
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+        
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+        
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+        }
+    </script>
+    </head>
+    <body>
+        <div style="left: 100px; top: 100px" class="rect resizable-content">
+            <div class="drag dragNW" onmousedown="startResize(this)"></div>
+            <div class="drag dragN" onmousedown="startResize(this)"></div>
+            <div class="drag dragNE" onmousedown="startResize(this)"></div>
+            <div class="drag dragW" onmousedown="startResize(this)"></div>
+            <div class="move" onmousedown="startMove(this)"></div>
+            <div class="drag dragE" onmousedown="startResize(this)"></div>
+            <div class="drag dragSW" onmousedown="startResize(this)"></div>
+            <div class="drag dragS" onmousedown="startResize(this)"></div>
+            <div class="drag dragSE" onmousedown="startResize(this)"></div>
+        </div>
+        <!-- <div style="left: 200px; top: 350px" class="rect resizable-content">
+            <div class="drag dragNW" onmousedown="startResize(this)"></div>
+            <div class="drag dragN" onmousedown="startResize(this)"></div>
+            <div class="drag dragNE" onmousedown="startResize(this)"></div>
+            <div class="drag dragW" onmousedown="startResize(this)"></div>
+            <div class="move"></div>
+            <div class="drag dragE" onmousedown="startResize(this)"></div>
+            <div class="drag dragSW" onmousedown="startResize(this)"></div>
+            <div class="drag dragS" onmousedown="startResize(this)"></div>
+            <div class="drag dragSE" onmousedown="startResize(this)"></div>
+        </div> -->
+
+        <div id="rectangle"></div>
+        <script>
+            let desk;
+            let w, h;
+            let x, y;
+            let tX, tY;
+
+            function startMove(element) {
+                desk = element.parentElement;
+                desk.classList.add("dragging");
+                x = event.clientX;
+                y = event.clientY;
+
+                const styles = window.getComputedStyle(desk);
+                w = parseInt(styles.width, 10);
+                h = parseInt(styles.height, 10);
+                tX = parseInt(styles.left, 10);
+                tY = parseInt(styles.top, 10);
+
+                document.addEventListener('mousemove', mouseMoveHandlerMove);
+                document.addEventListener('mouseup', mouseUpHandlerMove);
+            };
+
+            const mouseMoveHandlerMove = function (e) {
+                const unitPixel = 50;
+
+                const dx = e.clientX - x;
+                const dy = e.clientY - y;
+
+                const unitX = Math.round(dx / unitPixel);
+                const unitY = Math.round(dy / unitPixel);
+
+                desk.style.left = `${tX + unitX * unitPixel}px`;
+                desk.style.top = `${tY + unitY * unitPixel}px`;
+            };
+
+            const mouseUpHandlerMove = function () {
+                desk.classList.remove("dragging");
+                desk = null;
+                document.removeEventListener('mousemove', mouseMoveHandlerMove);
+                document.removeEventListener('mouseup', mouseUpHandlerMove);
+            };
+
+            function startResize(element) {
+                desk = element.parentElement;
+                desk.classList.add("dragging");
+                x = event.clientX;
+                y = event.clientY;
+
+                const styles = window.getComputedStyle(desk);
+                w = parseInt(styles.width, 10);
+                h = parseInt(styles.height, 10);
+
+                console.log(w);
+
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+            };
+
+            const mouseMoveHandler = function (e) {
+                const unitPixel = 50;
+
+                const dx = e.clientX - x;
+                const dy = e.clientY - y;
+
+                const unitX = Math.round(dx / unitPixel);
+                const unitY = Math.round(dy / unitPixel);
+
+                desk.style.width = `${w + unitX * unitPixel}px`;
+                desk.style.height = `${h + unitY * unitPixel}px`;
+            };
+
+            const mouseUpHandler = function () {
+                desk.classList.remove("dragging");
+                desk = null;
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            };
+
+        </script>
+    </body>
+</html>
